@@ -38,7 +38,7 @@ COPY . .
 RUN chown -R www-data:www-data /app
 
 # Expose PHP-FPM port
-# EXPOSE 9000
+EXPOSE 9000
 
 # Expose XDebug port
 EXPOSE 9003

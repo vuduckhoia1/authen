@@ -16,6 +16,8 @@ services:
     ports:
       - "9003:9003"
       - "8000:8000"
+    depends_on:
+      - redis # Ensure app waits for Redis to be ready
 
   db:
     image: mysql:8.0
@@ -39,6 +41,14 @@ services:
     depends_on:
       - app
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   mysql_data:
   php_logs:
+  redis_data:

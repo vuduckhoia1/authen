@@ -25,6 +25,9 @@ class User
     #[ORM\Column]
     private ?int $role = null;
 
+    const ADMIN = 1;
+    const USER = 0;
+
     public function getId(): ?int
     {
         return $this->id;

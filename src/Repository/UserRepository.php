@@ -56,10 +56,12 @@ class UserRepository extends ServiceEntityRepository
         $user->setEmail($params['email']);
         $user->setName($params['name']);
         $user->setPassword($params['password']);
+        $user->setRole(User::ADMIN);
 
         // Persist and flush the entity
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($user);
+        $entityManager->flush();
 
         return $user;
     }

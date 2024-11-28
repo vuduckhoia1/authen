@@ -41,12 +41,12 @@ class UserRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-        /**
+    /**
      * Create a new User record.
      *
      * @param string $email
      * @param string $name
-     * @param string $password (hashed)
+     * @param string $password
      * @return User
      */
     public function createUser(array $params): User
@@ -64,5 +64,10 @@ class UserRepository extends ServiceEntityRepository
         $entityManager->flush();
 
         return $user;
+    }
+
+    public function findUserByEmail(string $email): ?User
+    {
+        return $this->findOneBy(['email' => $email]);
     }
 }

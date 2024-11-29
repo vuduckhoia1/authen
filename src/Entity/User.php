@@ -72,7 +72,7 @@ class User implements UserInterface
 
     public function getRoles(): array
     {
-        return $this->role;
+        return array($this->role);
     }
 
     public function setRole(int $role): static
@@ -80,5 +80,16 @@ class User implements UserInterface
         $this->role = $role;
 
         return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        return;
+        // If you store temporary sensitive data, clear it here
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return 'abc';
     }
 }

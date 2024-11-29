@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\UserRepository;
+use App\Service\AuthService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,29 +14,26 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 class AuthController extends AbstractController
 {
-    private $userRepository, $jwtManager;
+    private $authService, $jwtManager;
 
-    public function __construct(UserRepository $userRepository, JWTTokenManagerInterface $jwtManager)
+    public function __construct(AuthService $authService, JWTTokenManagerInterface $jwtManager)
     {
         $this->jwtManager = $jwtManager;
-        $this->userRepository = $userRepository;
+        $this->authService = $authService;
     }
 
     #[Route('/regist-account', name: 'create_user', methods: ['POST'])]
     public function registAccount(Request $request, LoggerInterface $logger): JsonResponse
     {
-        try {
-            $params = $request->request->all();
-            if ($user = $this->userRepository->createUser($params)){
-                $logger->info('Create User record:', $params);
-            }
-        } catch (Exception $e) {
-            $logger->error($e->getMessage());
-            return $this->json('Error: ' . $e->getMessage());
+        $params = $request->request->all();
+        if(!$user = $this->authService->createUser($params)) {
+            return $this->json([
+                'message' => 'Regist failure'
+            ]);
         }
+
         return $this->json([
             'message' => 'Create Record successful',
-            'user' => $params,
         ]);
     }
 
@@ -44,7 +42,8 @@ class AuthController extends AbstractController
     {
         try {
             $params = $request->request->all();
-            $user = $this->userRepository->findUserByEmail($params['email']);
+            $login = $this->authService->login($params);
+            // $user = $this->authService->findUserByEmail($params['email']);
 
             if (!$user) {
                 $logger->info('User not exist!', [$params['email']]);
@@ -64,5 +63,10 @@ class AuthController extends AbstractController
             $logger->error($e->getMessage());
             return $this->json('Error: ' . $e->getMessage());
         }
+    }
+
+    private function getCacheKey($token): string
+    {
+        return sprintf('auth_user_%d', $token);
     }
 }
